@@ -1,0 +1,281 @@
+---
+swagger: "2.0"
+info:
+  description: "This API acts as a layer to make backend communicate with frontend\
+    \ application"
+  version: "1.0.0"
+  title: "Tourist app API"
+  contact:
+    email: "you@your-company.com"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "localhost"
+basePath: "/api/v1"
+tags:
+- name: "user"
+  description: "Operations about user"
+- name: "path"
+  description: "Operations on paths"
+schemes:
+- "https"
+- "http"
+paths:
+  /path/{pathId}/related:
+    get:
+      tags:
+      - "path"
+      summary: "Returns related paths"
+      description: "Returns a collection of paths related to the given one"
+      operationId: "get_related_paths"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "pathId"
+        in: "path"
+        required: true
+        type: "integer"
+        format: "int64"
+      - name: "limit"
+        in: "query"
+        required: false
+        type: "integer"
+        format: "int64"
+      - name: "offset"
+        in: "query"
+        required: false
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: "Successful operation"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: "integer"
+                format: "int32"
+                description: "Http status of the request"
+              totalResults:
+                type: "integer"
+                format: "int64"
+                description: "Total number of returned items"
+              paths:
+                type: "array"
+                items:
+                  $ref: "#/definitions/Path"
+        404:
+          description: "Path not found"
+      x-swagger-router-controller: "swagger_server.controllers.path_controller"
+  /user/{userId}/friends:
+    get:
+      tags:
+      - "user"
+      summary: "Get user's friends"
+      description: "Get all the friends of a given user"
+      operationId: "user_get_friends"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "userId"
+        in: "path"
+        required: true
+        type: "integer"
+        format: "int64"
+      - name: "limit"
+        in: "query"
+        required: false
+        type: "integer"
+        format: "int64"
+      - name: "offset"
+        in: "query"
+        required: false
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: "Successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/User"
+        404:
+          description: "No users found"
+      x-swagger-router-controller: "swagger_server.controllers.user_controller"
+  /user/{userId}/suggestedPaths:
+    get:
+      tags:
+      - "user"
+      summary: "Get suggested paths"
+      description: "Get a set of suggested paths for the current user"
+      operationId: "get_suggested_paths"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "userId"
+        in: "path"
+        required: true
+        type: "integer"
+        format: "int64"
+      - name: "limit"
+        in: "query"
+        required: false
+        type: "integer"
+        format: "int64"
+      - name: "offset"
+        in: "query"
+        required: false
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: "Successful operation"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: "integer"
+                format: "int32"
+                description: "Http status of the request"
+              totalResults:
+                type: "integer"
+                format: "int64"
+                description: "Total number of returned items"
+              paths:
+                type: "array"
+                items:
+                  $ref: "#/definitions/Path"
+        404:
+          description: "Path not found"
+      x-swagger-router-controller: "swagger_server.controllers.user_controller"
+definitions:
+  User:
+    type: "object"
+    required:
+    - "user_id"
+    - "username"
+    properties:
+      user_id:
+        type: "integer"
+        format: "int64"
+        example: 1
+      username:
+        type: "string"
+        example: "malta95"
+      first_name:
+        type: "string"
+        example: "Mario"
+      surname:
+        type: "string"
+        example: "Rossi"
+      email:
+        type: "string"
+        format: "email"
+        example: "email@domain.com"
+    title: "User"
+    description: "An user of the application"
+    example:
+      user_id: 1
+      surname: "Rossi"
+      first_name: "Mario"
+      email: "email@domain.com"
+      username: "malta95"
+  Path:
+    type: "object"
+    required:
+    - "image_url"
+    - "path_id"
+    - "title"
+    properties:
+      path_id:
+        type: "integer"
+        format: "int64"
+        example: 1
+      average_speed:
+        type: "number"
+        format: "double"
+        example: 1.5500000000000000444089209850062616169452667236328125
+      distance:
+        type: "number"
+        format: "double"
+        example: 1539
+        description: "Total distance along the path, in meters"
+      image_url:
+        type: "string"
+        example: "http://www.example.com/path_images/1.png"
+        description: "Image with the path plotted on a map."
+      title:
+        type: "string"
+        description: "Name of the path, shown to the User"
+      timestamp:
+        type: "string"
+        description: "Unix epoch time of the path"
+      coordinates:
+        type: "array"
+        items:
+          $ref: "#/definitions/Path_coordinates"
+    title: "Path"
+    description: "A path suggested to the user."
+    example:
+      distance: 1539
+      path_id: 1
+      image_url: "http://www.example.com/path_images/1.png"
+      coordinates:
+      - latitude: 1.46581298050294517310021547018550336360931396484375
+        longitude: 5.962133916683182377482808078639209270477294921875
+      - latitude: 1.46581298050294517310021547018550336360931396484375
+        longitude: 5.962133916683182377482808078639209270477294921875
+      title: "title"
+      average_speed: 1.5500000000000000444089209850062616169452667236328125
+      timestamp: "timestamp"
+  inline_response_200:
+    properties:
+      status:
+        type: "integer"
+        format: "int32"
+        description: "Http status of the request"
+      totalResults:
+        type: "integer"
+        format: "int64"
+        description: "Total number of returned items"
+      paths:
+        type: "array"
+        items:
+          $ref: "#/definitions/Path"
+    example:
+      totalResults: 6
+      paths:
+      - distance: 1539
+        path_id: 1
+        image_url: "http://www.example.com/path_images/1.png"
+        coordinates:
+        - latitude: 1.46581298050294517310021547018550336360931396484375
+          longitude: 5.962133916683182377482808078639209270477294921875
+        - latitude: 1.46581298050294517310021547018550336360931396484375
+          longitude: 5.962133916683182377482808078639209270477294921875
+        title: "title"
+        average_speed: 1.5500000000000000444089209850062616169452667236328125
+        timestamp: "timestamp"
+      - distance: 1539
+        path_id: 1
+        image_url: "http://www.example.com/path_images/1.png"
+        coordinates:
+        - latitude: 1.46581298050294517310021547018550336360931396484375
+          longitude: 5.962133916683182377482808078639209270477294921875
+        - latitude: 1.46581298050294517310021547018550336360931396484375
+          longitude: 5.962133916683182377482808078639209270477294921875
+        title: "title"
+        average_speed: 1.5500000000000000444089209850062616169452667236328125
+        timestamp: "timestamp"
+      status: 0
+  Path_coordinates:
+    properties:
+      latitude:
+        type: "number"
+        format: "double"
+      longitude:
+        type: "number"
+        format: "double"
+    example:
+      latitude: 1.46581298050294517310021547018550336360931396484375
+      longitude: 5.962133916683182377482808078639209270477294921875

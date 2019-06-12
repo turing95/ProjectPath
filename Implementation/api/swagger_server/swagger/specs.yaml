@@ -1,0 +1,223 @@
+swagger: '2.0'
+info:
+  version: "1.0.0"
+  title: "Tourist app API"
+  description: "This API acts as a layer to make backend communicate with frontend application"
+  # put the contact info for your development or API team
+  contact:
+    email: "you@your-company.com"
+
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+
+# tags are used for organizing operations
+tags:
+- name: "user"
+  description: "Operations about user"
+- name: "path"
+  description: "Operations on paths"
+
+
+
+paths:
+
+  /path/{pathId}/related:
+    get:
+      tags:
+      - "path"
+      summary: "Returns related paths"
+      description: "Returns a collection of paths related to the given one"
+      operationId: "getRelatedPaths"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "pathId"
+        in: "path"
+        type: "integer"
+        format: "int64"
+        required: true
+      - name: "limit"
+        in: "query"
+        type: "integer"
+        format: "int64"
+      - name: "offset"
+        in: "query"
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: "Successful operation"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: "integer"
+                format: "int32"
+                description: "Http status of the request"
+              totalResults:
+                type: "integer"
+                format: "int64"
+                description: "Total number of returned items"
+              paths:
+                type: "array"
+                items:
+                  $ref: "#/definitions/Path"
+        404:
+          description: "Path not found"
+
+  /user/{userId}/friends:
+    get:
+      tags:
+      - "user"
+      summary: "Get user's friends"
+      description: "Get all the friends of a given user"
+      operationId: "userGetFriends"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "userId"
+        in: "path"
+        type: "integer"
+        format: "int64"
+        required: true
+      - name: "limit"
+        in: "query"
+        type: "integer"
+        format: "int64"
+      - name: "offset"
+        in: "query"
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: "Successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/User"
+        404:
+          description: "No users found"
+
+  /user/{userId}/suggestedPaths:
+    get:
+      tags:
+      - "user"
+      summary: "Get suggested paths"
+      description: "Get a set of suggested paths for the current user"
+      operationId: "getSuggestedPaths"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "userId"
+        type: "integer"
+        format: "int64"
+        in: "path"
+        required: true
+      - name: "limit"
+        in: "query"
+        type: "integer"
+        format: "int64"
+      - name: "offset"
+        in: "query"
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: "Successful operation"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: "integer"
+                format: "int32"
+                description: "Http status of the request"
+              totalResults:
+                type: "integer"
+                format: "int64"
+                description: "Total number of returned items"
+              paths:
+                type: "array"
+                items:
+                  $ref: "#/definitions/Path"
+        404:
+          description: "Path not found"
+
+definitions:
+  User:
+    type: "object"
+    required:
+      - "user_id"
+      - "username"
+    properties:
+      user_id:
+        type: "integer"
+        format: "int64"
+        example: 1
+      username:
+        type: "string"
+        example: "malta95"
+      first_name:
+        type: "string"
+        example: "Mario"
+      surname:
+        type: "string"
+        example: "Rossi"
+      email:
+        type: "string"
+        format: "email"
+        example: "email@domain.com"
+    title: "User"
+    description: "An user of the application"
+
+  Path:
+    type: "object"
+    required:
+    - "path_id"
+    - "image_url"
+    - "title"
+    properties:
+      path_id:
+        type: "integer"
+        format: "int64"
+        example: 1
+      average_speed:
+        type: "number"
+        format: "double"
+        example: 1.55
+      distance:
+        type: "number"
+        format: "double"
+        description: "Total distance along the path, in meters"
+        example: 1539      
+      image_url:
+        type: "string"
+        description: "Image with the path plotted on a map."
+        example: "http://www.example.com/path_images/1.png"
+      title:
+        type: "string"
+        description: "Name of the path, shown to the User"
+      timestamp:
+        type: "string"
+        description: "Unix epoch time of the path"
+      coordinates:
+        type: "array"
+        items:
+          type: "object"
+          properties:
+            latitude:
+              type: "number"
+              format: "double"
+            longitude:
+              type: "number"
+              format: "double"
+
+    title: "Path"
+    description: "A path suggested to the user."
+
+host: "localhost"
+basePath: "/api/v1"
+schemes:
+ - "https"
+ - "http"
+
